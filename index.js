@@ -41,8 +41,13 @@ app.get('/hello', (req, res) => {
 
 app.post('/list', async function (req, res) {
 
+    const checkKey = req.body.passcode
     const movieName = req.body.keywordValue
     console.log('movies name == ', movieName)
+    
+     if (checkKey !== process.env.PASSCODE) {
+        console.log("someone try to use your api - keyword not match")
+    } else {
 
     const start = async (url, selectSearch, keyword, click, fatchdata, browser) => {
         const page = await browser.newPage(); // create new page instance
@@ -112,10 +117,11 @@ app.post('/list', async function (req, res) {
 
     
     //if you use two website then comment it
-    sendResult({ result }); 
+     sendResult({ result }); 
 
-    res.end();
-    console.log("Executed:", movieName)
+     res.end();
+     console.log("Executed:", movieName)
+    }
 })
 
 
