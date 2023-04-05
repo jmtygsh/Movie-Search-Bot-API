@@ -1,5 +1,4 @@
 const paymentController = require('./paymentController')
-const contactController = require('./contactController')
 const puppeteer = require('puppeteer-extra')
 const stealthPlugin = require('puppeteer-extra-plugin-stealth')
 puppeteer.use(stealthPlugin())
@@ -16,6 +15,8 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(cors());
+
+
 const browserPromise = puppeteer.launch({
     headless: true,
     args: [
@@ -23,11 +24,7 @@ const browserPromise = puppeteer.launch({
         "--no-sandbox",
         "--single-process",
         "--no-zygote",
-    ],
-    executablePath:
-        process.env.NODE_ENV === 'production'
-            ? process.env.PUPPETEER_EXECUTABLE_PATH
-            : puppeteer.executablePath(),
+    ]
 }); // launch browser instance
 
 app.get('/', (req, res) => {
@@ -35,18 +32,19 @@ app.get('/', (req, res) => {
     res.send(`Hello, ${name}!`);
 });
 
-
-var movieName;
-app.post('/movie/name', function (req, res) {
-    movieName = req.body.movies
-    console.log(movieName)
-    res.send(movieName)
+app.get('/hello', (req, res) => {
+    const name = 'i developed by ygsh';
+    res.send(`Hello, ${name}!`);
 });
 
-app.get('/list', async function (req, res) {
+
+
+app.post('/list', async function (req, res) {
+
+    const movieName = req.body.keywordValue
+    console.log('movies name == ', movieName)
+
     const start = async (url, selectSearch, keyword, click, fatchdata, browser) => {
-
-
         const page = await browser.newPage(); // create new page instance
 
         // set page options to improve speed
@@ -83,9 +81,9 @@ app.get('/list', async function (req, res) {
         return hrefs;
     }
 
-    const runSearch = async (url, selectSearch, click, keyword, fatchdata) => {
+    const runSearch = async (url, selectSearch, click, fatchdata) => {
         const browser = await browserPromise; // reuse browser instance
-        const hrefs = await start(url, selectSearch, keyword, click, fatchdata, browser);
+        const hrefs = await start(url, selectSearch, movieName, click, fatchdata, browser);
         return hrefs;
     };
 
@@ -94,15 +92,13 @@ app.get('/list', async function (req, res) {
         'https://moviesmod.net.in/',
         '#searchform input',
         '#searchform button',
-        movieName,
         '.latestPost h2 a'
     );
 
     // const result2 = await runSearch(
-    //     'https://hdmovie2.cool/',
+    //     'https://hdmovie2.sbs/',
     //     '.search-page input',
     //     '.search-page button',
-    //     movieName,
     //     '.result-item .details a'
     // );
 
@@ -110,8 +106,13 @@ app.get('/list', async function (req, res) {
         res.write(JSON.stringify(result));
     };
 
-    // sendResult({ result, result2 });
-    sendResult({ result });
+
+    // if you want to send data from two website
+    // sendResult({ result, result2 }); 
+
+    
+    //if you use two website then comment it
+    sendResult({ result }); 
 
     res.end();
     console.log("Executed:", movieName)
