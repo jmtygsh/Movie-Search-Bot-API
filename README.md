@@ -44,7 +44,7 @@ Automation with the Puppeteer library is kind of easy, but when I tried to handl
 
 However, I found a solution that helped me a lot.
 
-I used a single browser with a global variable so that every query is searched in one browser, which avoids opening many browsers, and closes every page after execution etc.
+I used a single browser with a global variable so that every query is searched in one browser, which avoids opening many browsers, and closes every page after execution
 
 req.resourceType() === 'image' || // block images
                 req.resourceType() === 'stylesheet' || // block stylesheets
